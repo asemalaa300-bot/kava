@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAVA Menu | KAVA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #798F77;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f9faf9;
+            --border-color: #e0e5e0;
+            --hover-color: #657a63;
+            --accent-color: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body.ltr {
+            direction: ltr;
+            text-align: left;
+        }
+
+        header {
+            background-color: var(--bg-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo img {
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            outline: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .category-nav {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            scrollbar-width: none;
+        }
+        
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            background: none;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            margin: 0 5px;
+            white-space: nowrap;
+            font-weight: 700;
+            border-radius: 20px;
+        }
+
+        .cat-btn.active, .cat-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .menu-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .category-section.active {
+            display: block;
+        }
+
+        .category-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+        .item-img-container {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: #eee;
+        }
+
+        .item-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .item-card:hover .item-img-container img {
+            transform: scale(1.08);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            min-height: 50px;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1.15rem;
+            line-height: 1.3;
+        }
+
+        .item-price {
+            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            margin-right: 10px;
+            background: #eef3ee;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        
+        body.ltr .item-price {
+            margin-right: 0;
+            margin-left: 10px;
+        }
+
+        .add-to-cart {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart:hover {
+            background: var(--hover-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); background-color: #25D366; }
+            100% { transform: scale(1); }
+        }
+        
+        .btn-animate {
+            animation: popClick 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes badgeBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); background-color: var(--accent-color); color: white; }
+        }
+
+        .badge-animate {
+            animation: badgeBounce 0.4s ease-out;
+        }
+
+        @keyframes counterPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); color: var(--accent-color); }
+            100% { transform: scale(1); }
+        }
+
+        .counter-animate {
+            animation: counterPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+        }
+
+        .floating-buttons {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            left: 25px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .float-btn {
+            pointer-events: auto;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .float-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .complain-btn {
+            background: var(--accent-color);
+        }
+        
+        .complain-btn:hover {
+            background: #c0392b;
+        }
+
+        .cart-badge {
+            background: white;
+            color: var(--primary-color);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: white;
+            width: 95%;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 25px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .close-modal {
+            background: none;
+            color: #777;
+            font-size: 1.5rem;
+        }
+        
+        .close-modal:hover { color: var(--accent-color); }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+            font-size: 1.05rem;
+        }
+        
+        .cart-item-info small {
+            color: #666;
+            font-weight: bold;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f5f7f5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .qty-btn {
+            background: white;
+            color: var(--primary-color);
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .qty-btn:active {
+            transform: scale(0.85);
+            background: #eee;
+        }
+        
+        .qty-number {
+            font-weight: 800; 
+            width: 20px; 
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .cart-total {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-align: left;
+            margin: 25px 0;
+            direction: ltr;
+            color: var(--primary-color);
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed var(--primary-color);
+        }
+        
+        body.ltr .cart-total {
+            text-align: right;
+        }
+
+        .checkout-btn {
+            background: #25D366;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        
+        .checkout-btn:hover {
+            background: #1ebc5a;
+            transform: translateY(-2px);
+        }
+
+        .hidden { display: none !important; }
+
+        footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            padding: 40px 20px 110px 20px;
+            margin-top: 50px;
+        }
+        
+        .footer-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+        
+        .footer-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .footer-text {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+        
+        .footer-text strong {
+            color: #222;
+            font-weight: 800;
+        }
+
+        @media (max-width: 600px) {
+            .float-btn span { display: none; }
+            .float-btn { padding: 15px; border-radius: 50%; width: 60px; height: 60px; justify-content: center; }
+            .cart-badge { position: absolute; top: -5px; right: -5px; }
+            .items-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="KAVA Logo" onerror="this.src='https://placehold.co/150x60/798F77/ffffff?text=KAVA'">
+        </div>
+        <div class="controls">
+            <button class="lang-btn" id="langToggle">English</button>
+        </div>
+    </header>
+
+    <div class="category-nav" id="categoryNav"></div>
+    <div class="menu-container" id="menuContainer"></div>
+
+    <footer>
+        <img src="images/86D9B42D-6627-41B0-83DF-14CFF5C6C49A.PNG" alt="Viral Plus Logo" class="footer-logo">
+        <div class="footer-text">
+            <p>powered by <strong>VIRAL PLUS COMPANY</strong></p>
+            <p>CEO| <strong>ASEM MEKAWY 01557345656</strong></p>
+        </div>
+    </footer>
+
+    <div class="floating-buttons">
+        <button class="float-btn complain-btn" id="complainBtn">
+            <i class="fas fa-headset"></i>
+            <span class="ar-text">استفسار / شكوى</span>
+            <span class="en-text hidden">Inquiry / Complaint</span>
+        </button>
+        
+        <button class="float-btn" id="cartBtn">
+            <div class="cart-badge" id="cartCount">0</div>
+            <i class="fas fa-shopping-cart"></i>
+            <span class="ar-text">الطلب</span>
+            <span class="en-text hidden">Order</span>
+        </button>
+    </div>
+
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="ar-text"><i class="fas fa-shopping-bag"></i> سلة الطلبات</h2>
+                <h2 class="en-text hidden"><i class="fas fa-shopping-bag"></i> Your Cart</h2>
+                <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="cartItemsList"></div>
+            
+            <div class="cart-total" id="cartTotal">
+                <span class="ar-text">الإجمالي: </span>
+                <span class="en-text hidden">Total: </span>
+                <span id="totalPrice">0</span>
+            </div>
+            
+            <button class="checkout-btn" id="checkoutBtn">
+                <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i>
+                <span class="ar-text">إرسال الطلب عبر واتساب</span>
+                <span class="en-text hidden">Order via WhatsApp</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const WHATSAPP_NUMBER = "201116402077"; 
+
+        const menuData = [
+            {
+                id: "hot_coffee", ar: "القهوة الساخنة", en: "HOT COFFEE", keyword: "hot+coffee,latte",
+                items: [
+                    { ar: "اسبريسو دابل", en: "Double Espresso", price: 45, img: "images/espresso.jpg" },
+                    { ar: "سينجل إسبريسو", en: "Single Espresso", price: 35, img: "images/espresso.jpg" },
+                    { ar: "أمريكانو", en: "Americano", price: 65, img: "images/americano.jpg" },
+                    { ar: "ماكياتو", en: "Macchiato", price: 70, img: "images/macchiato.jpg" },
+                    { ar: "لاتيه", en: "Latte", price: 80, img: "images/latte.jpg" },
+                    { ar: "فلات وايت", en: "Flat White", price: 80, img: "images/flat-white.jpg" },
+                    { ar: "كورتادو", en: "Cortado", price: 60, img: "images/cortado.jpg" },
+                    { ar: "كابتشينو", en: "Cappuccino", price: 80, img: "images/cappuccino.jpg" },
+                    { ar: "موكا دارك", en: "Dark Mocha", price: 75, img: "images/dark-mocha.jpg" },
+                    { ar: "موكا وايت", en: "White Mocha", price: 75, img: "images/white-mocha.jpg" },
+                    { ar: "كراميل ماكياتو", en: "Caramel Macchiato", price: 85, img: "images/caramel-macchiato.jpg" },
+                    { ar: "سبانيش لاتيه", en: "Spanish Latte", price: 85, img: "images/spanish-latte.jpg" }
+                ]
+            },
+            {
+                id: "classic_coffee", ar: "القهوة الكلاسيكية", en: "CLASSIC COFFEE", keyword: "turkish+coffee,cezve",
+                items: [
+                    { ar: "قهوة تركية سنجل", en: "Turkish Coffee Single", price: 30, img: "images/turkish-coffee.jpg" },
+                    { ar: "قهوة تركية دبل", en: "Turkish Coffee Double", price: 40, img: "images/turkish-coffee.jpg" },
+                    { ar: "قهوة فرنسية", en: "French Coffee", price: 50, img: "images/french-coffee.jpg" },
+                    { ar: "قهوة فرنسية بالكراميل", en: "French Coffee with Caramel", price: 60, img: "images/french-coffee-with-caramel.jpg" },
+                    { ar: "قهوة فرنسية بالنوتيلا", en: "French Coffee with Nutella", price: 65, img: "images/french-coffee-with-nutella.jpg" }
+                ]
+            },
+            {
+                id: "smoothies", ar: "السموذي", en: "SMOOTHIES", keyword: "smoothie,fruit+drink",
+                items: [
+                    { ar: "بلوبيري", en: "Blueberry", price: 70, img: "images/blueberry.jpg" },
+                    { ar: "خوخ", en: "Peach", price: 70, img: "images/peach.jpg" },
+                    { ar: "كيوي", en: "Kiwi", price: 75, img: "images/kiwi.jpg" },
+                    { ar: "ليمون بالنعناع", en: "Lemon Mint", price: 70, img: "images/lemon-mint.jpg" },
+                    { ar: "مانجو", en: "Mango", price: 75, img: "images/mango.jpg" },
+                    { ar: "فراولة", en: "Strawberry", price: 75, img: "images/strawberry.jpg" },
+                    { ar: "تروبيكال بلو", en: "Tropical Blue", price: 70, img: "images/tropical-blue.jpg" },
+                    { ar: "أناناس", en: "Pineapple", price: 70, img: "images/pineapple.jpg" },
+                    { ar: "باشن فروت", en: "Passion Fruit", price: 80, img: "images/passion-fruit.jpg" },
+                    { ar: "سموذي سلاش", en: "Smoothie Slush", price: 70, img: "images/smoothie-slush.jpg" },
+                    { ar: "بطيخ", en: "Watermelon", price: 75, img: "images/watermelon.jpg" }
+                ]
+            },
+            {
+                id: "shakes", ar: "الميلك شيك", en: "SHAKES", keyword: "milkshake,chocolate+drink",
+                items: [
+                    { ar: "فانيليا", en: "Vanilla", price: 70, img: "images/vanilla.jpg" },
+                    { ar: "كيت كات", en: "KitKat", price: 95, img: "images/oreo-snickers-kitkat.jpg" },
+                    { ar: "سنيكرز", en: "Snickers", price: 95, img: "images/oreo-snickers-kitkat.jpg" },
+                    { ar: "اوريو", en: "Oreo", price: 80, img: "images/oreo-snickers-kitkat.jpg" },
+                    { ar: "كراميل", en: "Caramel", price: 70, img: "images/caramel.jpg" },
+                    { ar: "هوهوز", en: "Blueberry Cheesecake", price: 80, img: "images/blueberry-cheesecake.jpg" },
+                    { ar: "توينكز", en: "Strawberry Cheesecake", price: 80, img: "images/strawberry-cheesecake.jpg" },
+                    { ar: "بيستاشيو", en: "Pistachio", price: 90, img: "images/pistachio.jpg" },
+                    { ar: "نوتيلا", en: "Nutella", price: 85, img: "images/nutella.jpg" },
+                    { ar: "لوتس", en: "Lotus", price: 95, img: "images/lotus.jpg" },
+                    { ar: "ميلك كيندر", en: "Milk Kinder", price: 95, img: "images/milk-kinder.jpg" },
+                    { ar: "ميلك لوتس", en: "Milk Lotus", price: 95, img: "images/milk-lotus.jpg" },
+                    { ar: "ميلك بابلي", en: "Milk Bubbly", price: 95, img: "images/milk-bubbly.jpg" },
+                    { ar: "ميلك بونتي", en: "Milk Bounty", price: 95, img: "images/milk-bounty.jpg" },
+                    { ar: "شيك فواكه", en: "Fruit Shake", price: 80, img: "images/fruit-shake.jpg" }
+                ]
+            },
+            {
+                id: "iced_coffee", ar: "القهوة المثلجة", en: "ICED COFFEE", keyword: "iced+coffee,cold+brew",
+                items: [
+                    { ar: "آيس لاتيه", en: "Iced Latte", price: 70, img: "images/iced-latte.jpg" },
+                    { ar: "آيس أمريكانو", en: "Iced Americano", price: 65, img: "images/iced-americano.jpg" },
+                    { ar: "آيس موكا", en: "Iced Mocha", price: 75, img: "images/iced-mocha.jpg" },
+                    { ar: "آيس وايت موكا", en: "Iced White Mocha", price: 75, img: "images/iced-white-mocha.jpg" },
+                    { ar: "آيس سبانيش لاتيه", en: "Iced Spanish Latte", price: 90, img: "images/iced-spanish-latte.jpg" },
+                    { ar: "آيس كراميل ماكياتو", en: "Iced Caramel Macchiato", price: 90, img: "images/iced-caramel-macchiato.jpg" },
+                    { ar: "آيس شيكن سالتد كراميل", en: "Iced Shaken Salted Caramel", price: 95, img: "images/iced-shaken-salted-caramel.jpg" },
+                    { ar: "آيس شيكن كريم بروليه", en: "Iced Shaken Creme Brulee", price: 95, img: "images/iced-shaken-creme-brulee.jpg" }
+                ]
+            },
+            {
+                id: "specialty_coffee", ar: "القهوة المختصة", en: "SPECIALTY COFFEE", keyword: "v60+coffee,pourover",
+                items: [
+                    { ar: "V60 ساخن", en: "V60 Hot", price: 130, img: "images/v60-hot.jpg" },
+                    { ar: "V60 مثلج", en: "V60 Iced", price: 135, img: "images/v60-iced.jpg" },
+                    { ar: "بوبا باشن فروت", en: "Passion Fruit Boba", price: 65, img: "images/passion-fruit-boba.jpg" },
+                    { ar: "بوبا بلو بيري", en: "Blueberry Boba", price: 65, img: "images/blueberry-boba.jpg" },
+                    { ar: "بوبا فراولة", en: "Strawberry Boba", price: 65, img: "images/strawberry-boba.jpg" },
+                    { ar: "بوبا مانجو", en: "Mango Boba", price: 65, img: "images/mango-boba.jpg" }
+                ]
+            },
+            {
+                id: "mix_kava", ar: "ميكس كافا", en: "Mix KAVA", keyword: "mango coconut+redbull esperesso,lemon ment strawberry",
+                items: [
+                    { ar: "مانجو كوكونت", en: "Mango Coconut", price: 90, img: "images/passion-fruit-boba.jpg" },
+                    { ar: "ريدبول ايسبريسو", en: "Redbull Espresso", price: 110, img: "images/blueberry-boba.jpg" },
+                    { ar: "ميكس ريدبول", en: "Mix Redbull", price: 110, img: "images/strawberry-boba.jpg" },
+                    { ar: "ميكس ليمون نعناع فراوله", en: "Lemon Mint Strawberry", price: 100, img: "images/mango-boba.jpg" }
+                ]
+            },
+            {
+                id: "hot_drinks", ar: "المشروبات الساخنة", en: "HOT DRINKS", keyword: "hot+chocolate,tea",
+                items: [
+                    { ar: "شاي", en: "Tea", price: 25, img: "images/tea.jpg" },
+                    { ar: "شاي أخضر", en: "Green Tea", price: 25, img: "images/green-tea.jpg" },
+                    { ar: "هوت سيدر", en: "Hot Cider", price: 40, img: "images/hot-cider.jpg" },
+                    { ar: "هوت شوكليت", en: "Hot Chocolate", price: 85, img: "images/hot-chocolate.jpg" },
+                    { ar: "اوريو", en: "Oreo", price: 75, img: "images/hot-lotus-nutella-oreo.jpg" },
+                    { ar: "نوتيلا", en: "Nutella", price: 80, img: "images/hot-lotus-nutella-oreo.jpg" },
+                    { ar: "لوتس", en: "Lotus", price: 80, img: "images/hot-lotus-nutella-oreo.jpg" },
+                    { ar: "سحلب بالمكسرات", en: "Sahlab with Nuts", price: 90, img: "images/sahlab-with-nuts.jpg" },
+                    { ar: "سحلب بالفواكه", en: "Sahlab with Fruits", price: 85, img: "images/sahlab-with-fruits.jpg" },
+                    { ar: "شاي بالحليب", en: "Milk Tea", price: 50, img: "images/milk-tea.jpg" }
+                ]
+            },
+            {
+                id: "frappe", ar: "الفرابيه", en: "FRAPPE", keyword: "frappuccino,frappe",
+                items: [
+                    { ar: "موكا فرابيه", en: "Mocha Frappe", price: 85, img: "images/mocha-frappe.jpg" },
+                    { ar: "وايت موكا فرابيه", en: "White Mocha Frappe", price: 85, img: "images/white-mocha-frappe.jpg" },
+                    { ar: "فرابيه كلاسيك", en: "Classic Frappe", price: 80, img: "images/classic-frappe.jpg" },
+                    { ar: "نوتيلا فرابيه", en: "Chocolate Frappe", price: 90, img: "images/chocolate-frappe.jpg" },
+                    { ar: "كراميل فرابيه", en: "Caramel Frappe", price: 85, img: "images/caramel-frappe.jpg" },
+                    { ar: "لوتس فرابيه", en: "Lotus Frappe", price: 90, img: "images/lotus-frappe.jpg" },
+                    { ar: "فرابيه بيستاشيو", en: "Pistachio Frappe", price: 90, img: "images/pistachio-frappe.jpg" },
+                    { ar: "شوكولاتة راش فرابيه", en: "Chocolate Rush Frappe", price: 85, img: "images/chocolate-rush-frappe.jpg" }
+                ]
+            },
+            {
+                id: "energy_drinks", ar: "مشروبات طاقة و غازية", en: "ENERGY & SOFT DRINKS", keyword: "soda,energy+drink",
+                items: [
+                    { ar: "ريد بول", en: "Red Bull", price: 85, img: "images/red-bull.jpg" },
+                    { ar: "ريد بول بنكهات", en: "Red Bull Flavors", price: 90, img: "images/red-bull-flavors.jpg" },
+                    { ar: "مياه", en: "Water", price: 10, img: "images/water.jpg" },
+                    { ar: "صودا", en: "Soda", price: 30, img: "images/soda.jpg" },
+                    { ar: "تويست", en: "Twist", price: 40, img: "images/twist.jpg" },
+                    { ar: "فيروز", en: "Fayrouz", price: 40, img: "images/fayrouz.jpg" },
+                    { ar: "شويبس", en: "Schweppes", price: 30, img: "images/shwibs.jpg" },
+                    { ar: "بيريل", en: "Birell", price: 40, img: "images/birell.jpg" }
+                ]
+            },
+            {
+                id: "fresh_juice", ar: "العصائر الطازجة", en: "FRESH JUICE", keyword: "fresh+juice,orange+juice",
+                items: [
+                    { ar: "مانجو", en: "Mango", price: 80, img: "images/mango-fresh-juice.jpg" },
+                    { ar: "فراولة", en: "Strawberry", price: 80, img: "images/strawberry-fresh-juice.jpg" },
+                    { ar: "برتقال", en: "Orange", price: 70, img: "images/orange.jpg" },
+                    { ar: "ليمون / ليمون بالنعناع", en: "Lemon / Lemon Mint", price: 65, img: "images/lemon-lemon-mint.jpg" },
+                    { ar: "بطيخ", en: "Watermelon", price: 70, img: "images/watermelon-fresh-juice.jpg" },
+                    { ar: "موز بالحليب", en: "Banana Milk", price: 70, img: "images/banana-milk.jpg" },
+                    { ar: "كيوي", en: "Kiwi", price: 85, img: "images/kiwi-fresh-juice.jpg" },
+                    { ar: "أفوجاتو", en: "Avocado", price: 100, img: "images/avocado.jpg" },
+                    { ar: "أفوجاتو مكسرات", en: "Avocado Nuts", price: 130, img: "images/avocado.jpg" },
+                    { ar: "مانجو كيوي", en: "Mango Kiwi", price: 100, img: "images/mango-kiwi.jpg" }
+                ]
+            },
+            {
+                id: "mojito", ar: "الموهيتو", en: "MOHITO", keyword: "mojito,mocktail",
+                items: [
+                    { ar: "موهيتو ليمون بالنعناع", en: "Lemon Mint Mohito", price: 80, img: "images/lemon-mint-mohito.jpg" },
+                    { ar: "موهيتو أزرق", en: "Blue Mohito", price: 80, img: "images/blue-mohito.jpg" },
+                    { ar: "موهيتو فراولة", en: "Strawberry Mohito", price: 80, img: "images/strawberry-mohito.jpg" },
+                    { ar: "موهيتو توت أزرق", en: "Blueberry Mohito", price: 80, img: "images/blueberry-mohito.jpg" },
+                    { ar: "موهيتو باشن فروت", en: "Passion Fruit Mohito", price: 80, img: "images/passion-fruit-mohito.jpg" },
+                    { ar: "موهيتو مانجو", en: "Mango Mohito", price: 80, img: "images/mango-mohito.jpg" },
+                    { ar: "موهيتو بلو سكاي", en: "Blue Sky Mohito", price: 80, img: "images/blue-sky-mohito.jpg" },
+                    { ar: "موهيتو دراجون فروت", en: "Dragon Fruit Mohito", price: 80, img: "images/dragon-fruit-mohito.jpg" },
+                    { ar: "موهيتو صن بيتش", en: "Sun Beach Mohito", price: 80, img: "images/sun-beach-mohito.jpg" }
+                ]
+            },
+            {
+                id: "matcha", ar: "الماتشا", en: "MATCHA", keyword: "matcha,matcha+latte",
+                items: [
+                    { ar: "ماتشا لاتيه ساخن", en: "Hot Matcha Latte", price: 70, img: "images/hot-matcha-latte.jpg" },
+                    { ar: "ماتشا لاتيه مثلج", en: "Iced Matcha Latte", price: 80, img: "images/iced-matcha-latte.jpg" },
+                    { ar: "ماتشا بالفراولة مثلج", en: "Iced Strawberry Matcha", price: 90, img: "images/iced-strawberry-matcha.jpg" },
+                    { ar: "ماتشا لاتيه بلوبيري", en: "Iced Blueberry Matcha", price: 90, img: "images/iced-blueberry-matcha.jpg" },
+                    { ar: "ماتشا وايت موكا مثلج", en: "Iced White Mocha Matcha", price: 90, img: "images/iced-white-mocha-matcha.jpg" }
+                ]
+            },
+            {
+                id: "dessert", ar: "الحلويات", en: "DESSERT", keyword: "dessert,cake,croissant",
+                items: [
+                    { ar: "كرواسون سادة", en: "Plain Croissant", price: 50, img: "images/plain-croissant.jpg" },
+                    { ar: "كرواسون لوتس", en: "Croissant Lotus", price: 90, img: "images/croissant-lotus-nutella-pistachio.jpg" },
+                    { ar: "كرواسون بيستاشيو", en: "Croissant Pistachio", price: 90, img: "images/croissant-lotus-nutella-pistachio.jpg" },
+                    { ar: "كرواسون نوتيلا", en: "Croissant Nutella", price: 85, img: "images/croissant-lotus-nutella-pistachio.jpg" },
+                    { ar: "تشيز كيك", en: "Cheese Cake", price: 90, img: "images/cheese-cake.jpg" },
+                    { ar: "ريد فيلفيت", en: "Red Velvet", price: 100, img: "images/red-velvet.jpg" },
+                    { ar: "سان سيباستيان", en: "San Sebastian", price: 95, img: "images/san-sebastian.jpg" },
+                    { ar: "مولتن كيك", en: "Molten Cake", price: 100, img: "images/molten-cake.jpg" },
+                    { ar: "ميني بان كيك نوتيلا", en: "Mini Pancake Nutella", price: 85, img: "images/Mini Pancake Pistachio.jpg" },
+                    { ar: "ميني بان كيك لوتس", en: "Mini Pancake Lotus", price: 90, img: "images/Mini Pancake Pistachio.jpg" },
+                    { ar: "ميني بان كيك بيستاشيو", en: "Mini Pancake Pistachio", price: 90, img: "images/Mini Pancake Pistachio.jpg" },
+                    { ar: "كافا بان كيك", en: "Kava Pancake", price: 120, img: "images/pancake.jpg" },
+                    { ar: "وافل نوتيلا", en: "Waffle Nutella", price: 90, img: "images/Waffle Nutella.jpg" },
+                    { ar: "وافل لوتس", en: "Waffle Lotus", price: 100, img: "images/Waffle Nutella.jpg" },
+                    { ar: "وافل بيستاشيو", en: "Waffle Pistachio", price: 100, img: "images/Waffle Nutella.jpg" },
+                    { ar: "كافا كريب", en: "Kava Crepe", price: 100, img: "images/kava-crepe.jpg" }
+                ]
+            }
+        ];
+
+        let currentLang = 'ar';
+        let cart = {};
+
+        const langBtn = document.getElementById('langToggle');
+        const body = document.body;
+        const navContainer = document.getElementById('categoryNav');
+        const menuContainer = document.getElementById('menuContainer');
+        const cartCount = document.getElementById('cartCount');
+
+        function init() {
+            renderNav();
+            renderMenu();
+            
+            if(menuData.length > 0) {
+                showCategory(menuData[0].id);
+            }
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            body.className = currentLang === 'en' ? 'ltr' : '';
+            langBtn.textContent = currentLang === 'ar' ? 'English' : 'عربي';
+            
+            document.querySelectorAll('.ar-text').forEach(el => el.classList.toggle('hidden', currentLang === 'en'));
+            document.querySelectorAll('.en-text').forEach(el => el.classList.toggle('hidden', currentLang === 'ar'));
+            
+            renderNav();
+            renderMenu();
+            renderCart();
+            
+            const activeSec = document.querySelector('.category-section.active');
+            if(activeSec) showCategory(activeSec.id.replace('sec_', ''));
+        }
+
+        langBtn.addEventListener('click', toggleLang);
+
+        function renderNav() {
+            navContainer.innerHTML = '';
+            menuData.forEach((cat) => {
+                const btn = document.createElement('button');
+                btn.className = 'cat-btn';
+                btn.textContent = cat[currentLang];
+                btn.onclick = () => showCategory(cat.id);
+                btn.id = `btn_${cat.id}`;
+                navContainer.appendChild(btn);
+            });
+        }
+
+        function renderMenu() {
+            menuContainer.innerHTML = '';
+            menuData.forEach((cat) => {
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                section.id = `sec_${cat.id}`;
+                
+                const title = document.createElement('h2');
+                title.className = 'category-title';
+                title.textContent = cat[currentLang];
+                section.appendChild(title);
+                
+                const grid = document.createElement('div');
+                grid.className = 'items-grid';
+                
+                cat.items.forEach((item, i) => {
+                    const itemId = `${cat.id}_${i}`;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div class="item-img-container">
+                            <img src="${item.img}" alt="${item.en}" loading="lazy" onerror="this.src='images/no-image.jpg'">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-header">
+                                <span class="item-name">${item[currentLang]}</span>
+                                <span class="item-price">${item.price} ج.م</span>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCart('${itemId}', '${item.ar}', '${item.en}', ${item.price}, this)">
+                                <i class="fas fa-plus"></i>
+                                <span class="${currentLang === 'en' ? 'hidden' : ''}">إضافة للطلب</span>
+                                <span class="${currentLang === 'ar' ? 'hidden' : ''}">Add to Order</span>
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                section.appendChild(grid);
+                menuContainer.appendChild(section);
+            });
+        }
+
+        function showCategory(id) {
+            document.querySelectorAll('.category-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const targetSec = document.getElementById(`sec_${id}`);
+            const targetBtn = document.getElementById(`btn_${id}`);
+            
+            if(targetSec) targetSec.classList.add('active');
+            if(targetBtn) {
+                targetBtn.classList.add('active');
+                targetBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+
+        function addToCart(id, nameAr, nameEn, price, btnElement) {
+            btnElement.classList.remove('btn-animate');
+            void btnElement.offsetWidth;
+            btnElement.classList.add('btn-animate');
+            
+            if(cart[id]) {
+                cart[id].qty++;
+            } else {
+                cart[id] = { nameAr, nameEn, price, qty: 1 };
+            }
+            updateCartCount();
+            
+            cartCount.classList.remove('badge-animate');
+            void cartCount.offsetWidth;
+            cartCount.classList.add('badge-animate');
+        }
+
+        function changeQty(id, delta, btnElement) {
+            if(cart[id]) {
+                cart[id].qty += delta;
+                if(cart[id].qty <= 0) {
+                    delete cart[id];
+                }
+            }
+            updateCartCount();
+            renderCart();
+
+            const row = document.getElementById(`cart_row_${id}`);
+            if(row) {
+                const qtySpan = row.querySelector('.qty-number');
+                if(qtySpan) {
+                    qtySpan.classList.remove('counter-animate');
+                    void qtySpan.offsetWidth;
+                    qtySpan.classList.add('counter-animate');
+                }
+            }
+        }
+
+        function updateCartCount() {
+            let total = 0;
+            for(let id in cart) total += cart[id].qty;
+            cartCount.textContent = total;
+        }
+
+        const cartModal = document.getElementById('cartModal');
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            renderCart();
+            cartModal.style.display = 'flex';
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', () => {
+            cartModal.style.display = 'none';
+        });
+
+        cartModal.addEventListener('click', (e) => {
+            if(e.target === cartModal) cartModal.style.display = 'none';
+        });
+
+        function renderCart() {
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+            let total = 0;
+            
+            for(let id in cart) {
+                const item = cart[id];
+                total += item.price * item.qty;
+                const name = currentLang === 'ar' ? item.nameAr : item.nameEn;
+                
+                list.innerHTML += `
+                    <div class="cart-item" id="cart_row_${id}">
+                        <div class="cart-item-info">
+                            <strong>${name}</strong> <br>
+                            <small>${item.price} ج.م</small>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="qty-btn" onclick="changeQty('${id}', -1, this)">-</button>
+                            <span class="qty-number">${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty('${id}', 1, this)">+</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('totalPrice').textContent = total + " ج.م";
+            
+            if(Object.keys(cart).length === 0) {
+                list.innerHTML = currentLang === 'ar' ? '<p style="text-align:center; padding: 20px; font-weight:bold; color:#777;">السلة فارغة</p>' : '<p style="text-align:center; font-weight:bold; padding: 20px; color:#777;">Cart is empty</p>';
+                document.getElementById('checkoutBtn').style.opacity = '0.5';
+                document.getElementById('checkoutBtn').style.pointerEvents = 'none';
+            } else {
+                document.getElementById('checkoutBtn').style.opacity = '1';
+                document.getElementById('checkoutBtn').style.pointerEvents = 'auto';
+            }
+        }
+
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            let message = currentLang === 'ar' ? "مرحباً كافا، أود طلب:\n\n" : "Hello Kava, I would like to order:\n\n";
+            let total = 0;
+            
+            for(let id in cart) {
+                const item = cart[id];
+                const name = currentLang === 'ar' ? item.nameAr : item.nameEn;
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                
+                message += `- ${item.qty}x ${name} (${itemTotal} ج.م)\n`;
+            }
+            
+            message += currentLang === 'ar' ? `\nالإجمالي: ${total} ج.م` : `\nTotal: ${total} EGP`;
+            
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('complainBtn').addEventListener('click', () => {
+            const msg = currentLang === 'ar' ? "مرحباً، لدي استفسار/شكوى:" : "Hello, I have an inquiry/complaint:";
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        });
+
+        init();
+    </script>
+</body>
+</html>
